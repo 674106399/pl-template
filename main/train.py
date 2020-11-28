@@ -26,7 +26,7 @@ def main():
     # ------------
     # model
     # ------------
-    model = Model(args.lr)
+    model = get_model()
 
     # ------------
     # training
