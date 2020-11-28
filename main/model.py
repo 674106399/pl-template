@@ -58,7 +58,7 @@ class Model(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         inputs, targets = batch
-        _, _, preds = self(input_img)
+        _, _, preds = self(inputs)
         loss = self.loss_func(preds, targets)
         acc = self.acc(preds, targets)
         log = {
