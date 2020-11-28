@@ -47,8 +47,8 @@ class DataModule(pl.LightningDataModule):
         self.train_dataset = RejDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
         self.val_dataset = RejDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), self.tfms['val'])
 
-        self.class_names = train_dataset.class_names
-        self.num_classes = train_dataset.num_classes
+        self.class_names = self.train_dataset.class_names
+        self.num_classes = self.train_dataset.num_classes
         # self.dims is returned when you call dm.size()
         # Setting default dims here because we know them.
         # Could optionally be assigned dynamically in dm.setup()
