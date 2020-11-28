@@ -30,7 +30,8 @@ class Model(pl.LightningModule):
         self.classifier = nn.Linear(feat_dim, num_classes)
 
         self.backbone_net.init_weights()
-        self.feat_net.apply(init_weights)
+        self.convfeat_net.apply(init_weights)
+        self.fcfeat_net.apply(init_weights)
         self.classifier.apply(init_weights)
 
     def loss_func(self, preds, targets):
