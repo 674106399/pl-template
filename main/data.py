@@ -7,8 +7,8 @@ import json
 
 class RejDataset(Dataset):
     def __init__(self, json_file, img_folder, tfm=None):
-        self.imgs = list(js.keys())
-        self.labels = list(js.values())
+        self.imgs = list(json_file.keys())
+        self.labels = list(json_file.values())
         self.tfm = tfm
 
         self.class_names = list(set(self.labels))
