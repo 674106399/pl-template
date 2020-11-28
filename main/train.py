@@ -21,7 +21,7 @@ def main():
     # ------------
     # data
     # ------------
-    dm = DataModule(tfms)
+    dm = DataModule(tfms, '/home/james/rej_metriclearning_100W_train_val.json', '/home/james/')
 
     # ------------
     # model
