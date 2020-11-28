@@ -3,6 +3,7 @@ from torch.utils.data import Dataset, DataLoader
 import pytorch_lightning as pl
 import os.path as osp
 from config import cfg
+import json
 
 class RejDataset(Dataset):
     def __init__(self, json_file, img_folder, tfm=None):
