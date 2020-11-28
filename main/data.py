@@ -9,7 +9,7 @@ from utils.preprocessing import Padding_resize
 
 class RejDataset(Dataset):
     def __init__(self, json_file, img_folder, tfm=None):
-        self.imgs = list(json_file.keys())
+        self.imgs = [osp.join(img_foler, x + '.jpg') for x in json_file.keys()]
         self.labels = list(json_file.values())
         self.tfm = tfm
 
