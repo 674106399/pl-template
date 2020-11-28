@@ -4,6 +4,8 @@ import pytorch_lightning as pl
 import os.path as osp
 from config import cfg
 import json
+from PIL import Image
+from utils.preprocessing import Padding_resize
 
 class RejDataset(Dataset):
     def __init__(self, json_file, img_folder, tfm=None):
