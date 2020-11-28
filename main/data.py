@@ -1,15 +1,16 @@
 import torch
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
+import os.path as osp
 
 from config import cfg
 class DataModule(pl.LightningDataModule):
 
-    def __init__(self, tfms):
+    def __init__(self, tfms, data_dir='./'):
         super().__init__()
         self.batch_size = cfg.train_batch_size
         self.tfms = tfms
-
+        self.data_dir = data_dir
         # self.dims is returned when you call dm.size()
         # Setting default dims here because we know them.
         # Could optionally be assigned dynamically in dm.setup()
@@ -19,8 +20,8 @@ class DataModule(pl.LightningDataModule):
         pass
 
     def setup(self, stage=None):
-        train_dataset = torchvision.datasets.ImageFolder('/home/jiangtao/rej_100w_imgfolder/', tfms['train'])
-        val_dataset = torchvision.datasets.ImageFolder('/home/jiangtao/rej_100w_imgfolder/', tfms['val'])
+        train_dataset = torchvision.datasets.ImageFolder(osp.join(self.data_dir, cfg.dataset, 'train'), tfms['train'])
+        val_dataset = torchvision.datasets.ImageFolder(osp.join(self.data_dir, cfg.dataset, 'val'), tfms['val'])
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.batch_size)
@@ -28,5 +29,5 @@ class DataModule(pl.LightningDataModule):
     def val_dataloader(self):
         return DataLoader(self.val_dataset, batch_size=self.batch_size)
 
-    def test_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size)
+    # def test_dataloader(self):
+    #     return DataLoader(self.val_dataset, batch_size=self.batch_size)
