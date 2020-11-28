@@ -41,8 +41,14 @@ class DataModule(pl.LightningDataModule):
         self.tfms = tfms
         self.json_file = json_file
         self.data_dir = data_dir
-        self.class_names = []
-        self.num_classes = 335249
+
+        with open(self.json_file) as f:
+            js = json.load(f)
+        self.train_dataset = RejDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
+        self.val_dataset = RejDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), self.tfms['val'])
+
+        self.class_names = train_dataset.class_names
+        self.num_classes = train_dataset.num_classes
         # self.dims is returned when you call dm.size()
         # Setting default dims here because we know them.
         # Could optionally be assigned dynamically in dm.setup()
@@ -52,13 +58,7 @@ class DataModule(pl.LightningDataModule):
         pass
 
     def setup(self, stage=None):
-        with open(self.json_file) as f:
-            js = json.load(f)
-        train_dataset = RejDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
-        val_dataset = RejDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), self.tfms['val'])
-
-        self.class_names = train_dataset.class_names
-        self.num_classes = train_dataset.num_classes
+        pass
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.batch_size, num_workers=self.num_workers)
