@@ -54,8 +54,8 @@ class DataModule(pl.LightningDataModule):
     def setup(self, stage=None):
         with open(self.json_file) as f:
             js = json.load(f)
-        train_dataset = RejDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), tfms['train'])
-        val_dataset = RejDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), tfms['val'])
+        train_dataset = RejDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
+        val_dataset = RejDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), self.tfms['val'])
 
         self.class_names = train_dataset.class_names
         self.num_classes = train_dataset.num_classes
