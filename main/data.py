@@ -51,8 +51,8 @@ class DataModule(pl.LightningDataModule):
             self.train_dataset = RejDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
             self.val_dataset = RejDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), self.tfms['val'])
         else:
-            self.train_dataset = ImageFolder(osp.join(data_dir, 'train'), self.tfms['train'])
-            self.val_dataset = ImageFolder(osp.join(data_dir, 'val'), self.tfms['val'])
+            self.train_dataset = ImageFolder(osp.join(data_dir, cfg.dataset, 'train'), self.tfms['train'])
+            self.val_dataset = ImageFolder(osp.join(data_dir, cfg.dataset, 'val'), self.tfms['val'])
 
         self.class_names = self.train_dataset.classes
         self.num_classes = len(self.class_names)
