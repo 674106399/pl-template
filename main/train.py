@@ -23,7 +23,7 @@ def main():
     # ------------
     # data
     # ------------
-    dm = DataModule(tfms, '/home/james/rej_metriclearning_100W_train_val.json', '/home/james/')
+    dm = DataModule(tfms, None, '/home/james/')
     print('num_classes:', dm.num_classes)
     # ------------
     # model
