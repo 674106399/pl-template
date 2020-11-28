@@ -71,18 +71,19 @@ class Model(pl.LightningModule):
                 'progress_bar': log}
 
     def validation_step(self, batch, batch_idx):
-        inputs, targets = batch
-        _, _, preds = self(input_img)
-        loss = self.loss_func(preds, targets)
-        acc = self.acc(preds, targets)
-        log = {
-            'val_loss': loss,
-            'val_acc': acc
-        }
-        self.logger.experiment.log(log)
-        return {'loss': loss, 
-                'val_acc': acc,
-                'progress_bar': log}
+        pass
+        # inputs, targets = batch
+        # _, _, preds = self(input_img)
+        # loss = self.loss_func(preds, targets)
+        # acc = self.acc(preds, targets)
+        # log = {
+        #     'val_loss': loss,
+        #     'val_acc': acc
+        # }
+        # self.logger.experiment.log(log)
+        # return {'loss': loss, 
+        #         'val_acc': acc,
+        #         'progress_bar': log}
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=cfg.lr)

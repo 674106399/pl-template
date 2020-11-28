@@ -6,6 +6,7 @@ from config import cfg
 import json
 from PIL import Image
 from utils.preprocessing import Padding_resize
+from torchvision.datasets import ImageFolder
 
 class RejDataset(Dataset):
     def __init__(self, json_file, img_folder, tfm=None):
@@ -36,7 +37,7 @@ class RejDataset(Dataset):
 
 class DataModule(pl.LightningDataModule):
 
-    def __init__(self, tfms, json_file, data_dir='./'):
+    def __init__(self, tfms, json_file=None, data_dir='./'):
         super().__init__()
         self.batch_size = cfg.train_batch_size
         self.num_workers = cfg.num_thread
@@ -44,10 +45,14 @@ class DataModule(pl.LightningDataModule):
         self.json_file = json_file
         self.data_dir = data_dir
 
-        with open(self.json_file) as f:
-            js = json.load(f)
-        self.train_dataset = RejDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
-        self.val_dataset = RejDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), self.tfms['val'])
+        if json_file:
+            with open(self.json_file) as f:
+                js = json.load(f)
+            self.train_dataset = RejDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
+            self.val_dataset = RejDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), self.tfms['val'])
+        else:
+            self.train_dataset = ImageFolder(osp.join(data_dir, 'train'), self.tfms['train'])
+            self.val_dataset = ImageFolder(osp.join(data_dir, 'val'), self.tfms['val'])
 
         self.class_names = self.train_dataset.class_names
         self.num_classes = self.train_dataset.num_classes
