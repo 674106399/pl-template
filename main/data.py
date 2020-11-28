@@ -41,7 +41,7 @@ class DataModule(pl.LightningDataModule):
         self.json_file = json_file
         self.data_dir = data_dir
         self.class_names = []
-        self.num_classes = -1
+        self.num_classes = 335249
         # self.dims is returned when you call dm.size()
         # Setting default dims here because we know them.
         # Could optionally be assigned dynamically in dm.setup()

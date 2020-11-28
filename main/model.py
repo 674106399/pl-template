@@ -19,7 +19,7 @@ class Model(pl.LightningModule):
         
         self.convfeat_net = nn.Sequential(
             nn.BatchNorm2d(convfeat_dim),
-            nn.Dropout(p=drop_ratio),
+            nn.Dropout(p=0.1),
             Flatten(),
             nn.BatchNorm1d(convfeat_dim * expansion * expansion)
         )
