@@ -2,7 +2,8 @@ import os
 from argparse import ArgumentParser
 import torch
 import pytorch_lightning as pl
-
+from pytorch_lightning.loggers import WandbLogger
+import wandb
 from data import DataModule
 from model import Model, get_model
 from utils.preprocessing import tfms
@@ -31,6 +32,7 @@ def main():
     # ------------
     # training
     # ------------
+    wandb_logger = WandbLogger(offline=True)
     trainer = pl.Trainer.from_argparse_args(
         # training settings
         args,

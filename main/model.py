@@ -52,20 +52,37 @@ class Model(pl.LightningModule):
         out = self.classifier(fc_feat)
         return conv_feat, fc_feat, out
 
+    def acc(self, y_pred, y_true):
+        accuracy = (y_pred.argmax(1) == y_true).float().mean()
+        return accuracy
+
     def training_step(self, batch, batch_idx):
         inputs, targets = batch
-
         _, _, preds = self(input_img)
         loss = self.loss_func(preds, targets)
-        self.log('train_loss', loss)
-        return loss
+        acc = self.acc(preds, targets)
+        log = {
+            'train_loss': loss,
+            'train_acc': acc
+        }
+        self.logger.experiment.log(log)
+        return {'loss': loss, 
+                'train_acc': acc,
+                'progress_bar': log}
 
     def validation_step(self, batch, batch_idx):
         inputs, targets = batch
-
         _, _, preds = self(input_img)
         loss = self.loss_func(preds, targets)
-        self.log('val_loss', loss)
+        acc = self.acc(preds, targets)
+        log = {
+            'val_loss': loss,
+            'val_acc': acc
+        }
+        self.logger.experiment.log(log)
+        return {'loss': loss, 
+                'val_acc': acc,
+                'progress_bar': log}
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=cfg.lr)
