@@ -23,7 +23,7 @@ def main():
     # ------------
     # data
     # ------------
-    dm = DataModule(tfms, None, '/home/jiangtao/')
+    dm = DataModule(tfms, None, '/home/james/')
     print('num_classes:', dm.num_classes)
     # ------------
     # model
