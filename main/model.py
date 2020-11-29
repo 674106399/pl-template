@@ -14,12 +14,13 @@ class Model(pl.LightningModule):
     def __init__(self, backbone, feat_dim, num_classes):
         super().__init__()
 
-        self.backbone_net = backbone
+        self.backbone_net = nn.Sequential(
+            backbone,
+            nn.AdaptiveAvgPool2d((1,1)),
+        )
         convfeat_dim, expansion = self.get_convfeat_dim()
         
         self.convfeat_net = nn.Sequential(
-            nn.BatchNorm2d(convfeat_dim),
-            nn.Dropout(p=0.1),
             Flatten(),
             nn.BatchNorm1d(convfeat_dim * expansion * expansion)
         )
