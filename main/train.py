@@ -45,8 +45,8 @@ def main():
 
         # debug
         # fast_dev_run=True,
-        limit_train_batches=10,
-        limit_val_batches=10,
+        # limit_train_batches=10,
+        # limit_val_batches=10,
 
         # training tricks
         accumulate_grad_batches=10,
