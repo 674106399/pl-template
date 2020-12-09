@@ -18,7 +18,7 @@ class Config:
     end_epoch = 20 if dataset == 'rej_100w_20201209' else 50
     lr = 3e-4
     lr_dec_factor = 10
-    train_batch_size = 8
+    train_batch_size = 4
 
     ## directory
     cur_dir = osp.dirname(os.path.abspath(__file__))
