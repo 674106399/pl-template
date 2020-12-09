@@ -49,10 +49,10 @@ class DataModule(pl.LightningDataModule):
             with open(self.json_file) as f:
                 js = json.load(f)
             self.train_dataset = RejDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
-            self.val_dataset = RejDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), self.tfms['val'])
+            # self.val_dataset = RejDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), self.tfms['val'])
         else:
             self.train_dataset = ImageFolder(osp.join(data_dir, cfg.dataset, 'train'), self.tfms['train'])
-            self.val_dataset = ImageFolder(osp.join(data_dir, cfg.dataset, 'val'), self.tfms['val'])
+            # self.val_dataset = ImageFolder(osp.join(data_dir, cfg.dataset, 'val'), self.tfms['val'])
 
         self.class_names = self.train_dataset.classes
         self.num_classes = len(self.class_names)
@@ -68,10 +68,10 @@ class DataModule(pl.LightningDataModule):
         pass
 
     def train_dataloader(self):
-        return DataLoader(self.train_dataset, batch_size=self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.train_dataset, shuffle=True, batch_size=self.batch_size, num_workers=self.num_workers)
 
-    def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.num_workers)
+    # def val_dataloader(self):
+    #     return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.num_workers)
 
     # def test_dataloader(self):
     #     return DataLoader(self.val_dataset, batch_size=self.batch_size)

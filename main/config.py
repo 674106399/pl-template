@@ -31,7 +31,7 @@ class Config:
     result_dir = osp.join(output_dir, 'result')
 
     ## others
-    num_thread = 4
+    num_thread = 8
     # gpu_ids = '0'
     # num_gpus = 1
     # continue_train = False

@@ -9,6 +9,7 @@ import pytorch_lightning as pl
 
 from utils.preprocessing import load_classes
 from nets.module import BackboneNet, Flatten, init_weights
+from nets.loss import CircleLoss
 
 class Model(pl.LightningModule):
     def __init__(self, backbone, feat_dim, num_classes):
@@ -29,6 +30,7 @@ class Model(pl.LightningModule):
             nn.BatchNorm1d(feat_dim)
         )
         self.classifier = nn.Linear(feat_dim, num_classes)
+        self.circleloss = CircleLoss(feat_dim, num_classes)
 
         # self.backbone_net.apply(init_weights)
         self.convfeat_net.apply(init_weights)
@@ -59,8 +61,9 @@ class Model(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         inputs, targets = batch
-        _, _, preds = self(inputs)
-        loss = self.loss_func(preds, targets)
+        _, fc_feat, preds = self(inputs)
+        # loss = self.loss_func(preds, targets)
+        loss = self.circleloss(fc_feat, targets) + self.loss_func(preds, targets)
         acc = self.acc(preds, targets)
         log = {
             'train_loss': loss,
