@@ -68,7 +68,7 @@ class Model(pl.LightningModule):
         loss = self.circleloss(fc_feat, targets) + self.loss_func(preds, targets)
         acc = self.acc(preds, targets)
         log = {
-            'train_loss': loss
+            'train_loss': loss,
             'train_acc': acc
         }
         self.logger.experiment.log(log)
