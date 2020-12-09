@@ -49,7 +49,7 @@ def main():
         limit_val_batches=0.0,
 
         # training tricks
-        accumulate_grad_batches=10,
+        # accumulate_grad_batches=10,
         # early_stop_callback=early_stop_callback,
         precision=16, 
         benchmark=True
