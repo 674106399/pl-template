@@ -59,7 +59,7 @@ def main():
     # ------------
     # testing
     # ------------
-    trainer.test(model, datamodule=dm)
+    # trainer.test(model, datamodule=dm)
 
 
 if __name__ == '__main__':
