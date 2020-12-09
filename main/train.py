@@ -39,7 +39,7 @@ def main():
         args,
         distributed_backend='ddp',
         logger=wandb_logger,
-        gpus=[1,2],
+        gpus=[1,2,5,6],
         # profiler=True,
         max_epochs=cfg.end_epoch,
 
@@ -49,7 +49,7 @@ def main():
         limit_val_batches=0.0,
 
         # training tricks
-        # accumulate_grad_batches=10,
+        accumulate_grad_batches=10,
         # early_stop_callback=early_stop_callback,
         precision=16, 
         benchmark=True
