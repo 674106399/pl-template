@@ -29,13 +29,13 @@ class Model(pl.LightningModule):
             nn.Linear(convfeat_dim * expansion * expansion, feat_dim),  # size / 16
             nn.BatchNorm1d(feat_dim)
         )
-        self.classifier = nn.Linear(feat_dim, num_classes)
+        # self.classifier = nn.Linear(feat_dim, num_classes)
         self.circleloss = CircleLoss(feat_dim, num_classes)
 
         # self.backbone_net.apply(init_weights)
         self.convfeat_net.apply(init_weights)
         self.fcfeat_net.apply(init_weights)
-        self.classifier.apply(init_weights)
+        # self.classifier.apply(init_weights)
 
     def loss_func(self, preds, targets):
         return F.cross_entropy(preds, targets)
@@ -52,8 +52,9 @@ class Model(pl.LightningModule):
         img_feat = self.backbone_net(x)
         conv_feat = self.convfeat_net(img_feat)
         fc_feat = self.fcfeat_net(conv_feat)
-        out = self.classifier(fc_feat)
-        return conv_feat, fc_feat, out
+        # out = self.classifier(fc_feat)
+        # return conv_feat, fc_feat, out
+        return conv_feat, fc_feat
 
     def acc(self, y_pred, y_true):
         accuracy = (y_pred.argmax(1) == y_true).float().mean()
@@ -61,17 +62,18 @@ class Model(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         inputs, targets = batch
-        _, fc_feat, preds = self(inputs)
+        # _, fc_feat, preds = self(inputs)
+        _, fc_feat = self(inputs)
         # loss = self.loss_func(preds, targets)
-        loss = self.circleloss(fc_feat, targets) + self.loss_func(preds, targets)
-        acc = self.acc(preds, targets)
+        loss = self.circleloss(fc_feat, targets)
+        # acc = self.acc(preds, targets)
         log = {
-            'train_loss': loss,
-            'train_acc': acc
+            'train_loss': loss
+            # 'train_acc': acc
         }
         self.logger.experiment.log(log)
         return {'loss': loss, 
-                'train_acc': acc,
+                # 'train_acc': acc,
                 'progress_bar': log}
 
     def validation_step(self, batch, batch_idx):
