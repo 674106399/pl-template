@@ -5,7 +5,7 @@ import sys
 class Config:
     
     ## dataset
-    dataset = 'rej_100w_imgfolder' # InterHand2.6M, RHD, STB
+    dataset = 'rej_100w_20201209' # InterHand2.6M, RHD, STB
 
     ## input, output
     input_img_shape = (256, 256)
@@ -14,8 +14,8 @@ class Config:
     resnet_type = 50 # 18, 34, 50, 101, 152
 
     ## training config
-    lr_dec_epoch = [15, 17] if dataset == 'rej_100w_imgfolder' else [45,47]
-    end_epoch = 20 if dataset == 'rej_100w_imgfolder' else 50
+    lr_dec_epoch = [15, 17] if dataset == 'rej_100w_20201209' else [45,47]
+    end_epoch = 20 if dataset == 'rej_100w_20201209' else 50
     lr = 3e-4
     lr_dec_factor = 10
     train_batch_size = 12
