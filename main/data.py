@@ -41,7 +41,7 @@ class SiameseDataset(Dataset):
         randnum = np.random.random()
         if randnum > (1.0 / cfg.train_batch_size):
             # 随机取一个负样例
-            img2_idx = np.random.randint(0, self.imgs)
+            img2_idx = np.random.randint(0, len(self.imgs))
             label2 = self.labels[img2_idx]
             img2 = Image.open(osp.join(self.img_folder, label2, self.imgs[img2_idx]+'.jpg')).convert('RGB')
             
