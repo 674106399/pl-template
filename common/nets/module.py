@@ -13,13 +13,15 @@ class Flatten(nn.Module):
 class BackboneNet(nn.Module):
     def __init__(self):
         super(BackboneNet, self).__init__()
-        self.resnet = ResNetBackbone(cfg.resnet_type)
-    
+        # self.net = ResNetBackbone(cfg.resnet_type)
+        net = torch.hub.load('zhanghang1989/ResNeSt', 'resnest101', pretrained=True)
+        self.net = nn.Sequential(*list(net.children())[:-2])
+
     def init_weights(self):
-        self.resnet.init_weights()
+        self.net.init_weights()
 
     def forward(self, img):
-        img_feat = self.resnet(img)
+        img_feat = self.net(img)
         return img_feat
 
 def init_weights(m):

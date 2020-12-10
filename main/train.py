@@ -23,7 +23,7 @@ def main():
     # ------------
     # data
     # ------------
-    dm = DataModule(tfms, None, '/home/jiangtao/')
+    dm = DataModule(tfms, '/home/jiangtao/rej_100w_20201209.json', '/home/jiangtao/')
     print('num_classes:', dm.num_classes)
     # ------------
     # model
@@ -51,6 +51,7 @@ def main():
         # training tricks
         # accumulate_grad_batches=10,
         # early_stop_callback=early_stop_callback,
+        max_epochs=cfg.end_epoch,
         precision=16, 
         benchmark=True
     )

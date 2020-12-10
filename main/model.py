@@ -15,10 +15,11 @@ class Model(pl.LightningModule):
     def __init__(self, backbone, feat_dim, num_classes):
         super().__init__()
 
-        self.backbone_net = nn.Sequential(
-            backbone,
-            nn.AdaptiveAvgPool2d((1,1)),
-        )
+        # self.backbone_net = nn.Sequential(
+        #     backbone,
+        #     nn.AdaptiveAvgPool2d((1,1)),
+        # )
+        self.backbone_net = backbone
         convfeat_dim, expansion = self.get_convfeat_dim()
         
         self.convfeat_net = nn.Sequential(
@@ -26,11 +27,13 @@ class Model(pl.LightningModule):
             nn.BatchNorm1d(convfeat_dim * expansion * expansion)
         )
         self.fcfeat_net = nn.Sequential(
+            nn.Dropout(),
             nn.Linear(convfeat_dim * expansion * expansion, feat_dim),  # size / 16
             nn.BatchNorm1d(feat_dim)
         )
-        self.classifier = nn.Linear(feat_dim, num_classes)
-        self.circleloss = CircleLoss(feat_dim, num_classes)
+        # self.classifier = nn.Linear(feat_dim, num_classes)
+        # self.circleloss = CircleLoss(feat_dim, num_classes)
+        self.classifier = nn.Linear(feat_dim, 1)
 
         # self.backbone_net.apply(init_weights)
         self.convfeat_net.apply(init_weights)
@@ -48,12 +51,25 @@ class Model(pl.LightningModule):
         assert len(res_shape) == 4, 'res_shape.shape = ' + str(res_shape)
         return res_shape[1], res_shape[2]
 
-    def forward(self, x):
+    def _forward(self, x):
         img_feat = self.backbone_net(x)
         conv_feat = self.convfeat_net(img_feat)
         fc_feat = self.fcfeat_net(conv_feat)
-        out = self.classifier(fc_feat)
-        return conv_feat, fc_feat, out
+        return conv_feat, fc_feat
+
+    def forward(self, x1, x2):
+        conv_feat1, fc_feat1 = self._forward(x1)
+        conv_feat2, fc_feat2 = self._forward(x2)
+        out = torch.abs(fc_feat1 - fc_feat2)
+        out = self.classifier(out)
+        return conv_feat1, fc_feat1, conv_feat2, fc_feat2, out
+
+    # def forward(self, x):
+    #     img_feat = self.backbone_net(x)
+    #     conv_feat = self.convfeat_net(img_feat)
+    #     fc_feat = self.fcfeat_net(conv_feat)
+    #     out = self.classifier(fc_feat)
+    #     return conv_feat, fc_feat, out
         # return conv_feat, fc_feat
 
     def acc(self, y_pred, y_true):
@@ -61,12 +77,16 @@ class Model(pl.LightningModule):
         return accuracy
 
     def training_step(self, batch, batch_idx):
-        inputs, targets = batch
-        _, fc_feat, preds = self(inputs)
+        # inputs, y = batch
+        im1, im2, _, targets = batch
+        # _, fc_feat, preds = self(inputs)
         # _, fc_feat = self(inputs)
+        conv_feat1, fc_feat1, conv_feat2, fc_feat2, logits = self(inputs)
         # loss = self.loss_func(preds, targets)
-        loss = self.circleloss(fc_feat, targets) + self.loss_func(preds, targets)
-        acc = self.acc(preds, targets)
+        # loss = self.circleloss(fc_feat, targets) + self.loss_func(preds, targets)
+        loss = F.binary_cross_entropy_with_logits(logits, labels)
+        # acc = self.acc(preds, targets)
+        acc = (logits == labels).float().mean()
         log = {
             'train_loss': loss,
             'train_acc': acc

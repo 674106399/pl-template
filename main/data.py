@@ -7,6 +7,60 @@ import json
 from PIL import Image
 from utils.preprocessing import Padding_resize
 from torchvision.datasets import ImageFolder
+import numpy as np
+
+class SiameseDataset(Dataset):
+    def __init__(self, json_file, img_folder, tfm=None):
+        self.imgs = [osp.join(img_folder, x + '.jpg') for x in json_file.keys()]
+        self.labels = list(json_file.values())
+        self.tfm = tfm
+        self.img_folder = img_folder
+
+        self.class_names = list(set(self.labels))
+        self.num_classes = len(self.class_names)
+        # self.label2id = {}
+        # for idx, label in enumerate(self.class_names):
+        #     self.label2id[label] = idx
+
+        self.label2imglist = {}
+        for k in json_file:
+            if json_file[k] not in self.label2imglist:
+                self.label2imglist[json_file[k]] = set([k])
+            else:
+                self.label2imglist[json_file[k]].add(k)
+        
+    def __getitem__(self, index):
+        img1 = Image.open(self.imgs[index]).convert('RGB')
+        label1 = self.labels[index]
+        w, h = img1.size
+        if w != h:
+            img1 = Padding_resize(img1)
+        if self.tfm:
+            img1 = self.tfm(img1)
+
+        randnum = np.random.random()
+        if randnum > (1.0 / cfg.train_batch_size):
+            # 随机取一个负样例
+            img2_idx = np.random.randint(0, self.imgs)
+            img2 = Image.open(self.imgs[img2_idx]).convert('RGB')
+            label2 = self.labels[img2_idx]
+        else:
+            # 取一个正样例
+            img2_path = osp.join(self.img_folder, np.random.choice(self.label2imglist[label1]) + '.jpg')
+            img2 = Image.open(img2_path)
+            label2 = label1
+
+        target = 1.0 if label1 == label2 else 0.0
+        
+        w, h = img2.size
+        if w != h:
+            img2 = Padding_resize(img2)
+        if self.tfm:
+            img2 = self.tfm(img2)
+        return img1, img2, label1, target
+    
+    def __len__(self):
+        return len(self.imgs)
 
 class RejDataset(Dataset):
     def __init__(self, json_file, img_folder, tfm=None):
@@ -48,7 +102,8 @@ class DataModule(pl.LightningDataModule):
         if json_file:
             with open(self.json_file) as f:
                 js = json.load(f)
-            self.train_dataset = RejDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
+            self.train_dataset = SiameseDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
+            # self.train_dataset = RejDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
             # self.val_dataset = RejDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), self.tfms['val'])
         else:
             self.train_dataset = ImageFolder(osp.join(data_dir, cfg.dataset, 'val'), self.tfms['train'])
