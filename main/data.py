@@ -47,7 +47,7 @@ class SiameseDataset(Dataset):
             
         else:
             # 取一个正样例
-            img2_path = osp.join(self.img_folder, label1, np.random.choice(self.label2imglist[label1]) + '.jpg')
+            img2_path = osp.join(self.img_folder, label1, np.random.choice(list(self.label2imglist[label1])) + '.jpg')
             img2 = Image.open(img2_path)
             label2 = label1
 
