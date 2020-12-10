@@ -51,15 +51,15 @@ class Model(pl.LightningModule):
         assert len(res_shape) == 4, 'res_shape.shape = ' + str(res_shape)
         return res_shape[1], res_shape[2]
 
-    def _forward(self, x):
+    def featuremap(self, x):
         img_feat = self.backbone_net(x)
         conv_feat = self.convfeat_net(img_feat)
         fc_feat = self.fcfeat_net(conv_feat)
         return conv_feat, fc_feat
 
     def forward(self, x1, x2):
-        conv_feat1, fc_feat1 = self._forward(x1)
-        conv_feat2, fc_feat2 = self._forward(x2)
+        conv_feat1, fc_feat1 = self.featuremap(x1)
+        conv_feat2, fc_feat2 = self.featuremap(x2)
         out = torch.abs(fc_feat1 - fc_feat2)
         out = self.classifier(out)
         return conv_feat1, fc_feat1, conv_feat2, fc_feat2, out
@@ -81,7 +81,7 @@ class Model(pl.LightningModule):
         im1, im2, _, targets = batch
         # _, fc_feat, preds = self(inputs)
         # _, fc_feat = self(inputs)
-        conv_feat1, fc_feat1, conv_feat2, fc_feat2, logits = self(inputs)
+        conv_feat1, fc_feat1, conv_feat2, fc_feat2, logits = self(im1, im2)
         # loss = self.loss_func(preds, targets)
         # loss = self.circleloss(fc_feat, targets) + self.loss_func(preds, targets)
         loss = F.binary_cross_entropy_with_logits(logits, labels)
