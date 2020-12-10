@@ -109,7 +109,7 @@ class DataModule(pl.LightningDataModule):
             self.train_dataset = ImageFolder(osp.join(data_dir, cfg.dataset, 'val'), self.tfms['train'])
             # self.val_dataset = ImageFolder(osp.join(data_dir, cfg.dataset, 'val'), self.tfms['val'])
 
-        self.class_names = self.train_dataset.classes
+        self.class_names = self.train_dataset.class_names
         self.num_classes = len(self.class_names)
         # self.dims is returned when you call dm.size()
         # Setting default dims here because we know them.
