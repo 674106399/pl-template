@@ -84,9 +84,9 @@ class Model(pl.LightningModule):
         conv_feat1, fc_feat1, conv_feat2, fc_feat2, logits = self(im1, im2)
         # loss = self.loss_func(preds, targets)
         # loss = self.circleloss(fc_feat, targets) + self.loss_func(preds, targets)
-        loss = F.binary_cross_entropy_with_logits(logits, labels)
+        loss = F.binary_cross_entropy_with_logits(logits, targets)
         # acc = self.acc(preds, targets)
-        acc = (logits == labels).float().mean()
+        acc = (logits == targets).float().mean()
         log = {
             'train_loss': loss,
             'train_acc': acc
