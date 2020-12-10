@@ -41,7 +41,6 @@ def main():
         logger=wandb_logger,
         gpus=[1,2,5,6],
         # profiler=True,
-        max_epochs=cfg.end_epoch,
 
         # debug
         # fast_dev_run=True,
