@@ -11,7 +11,7 @@ import numpy as np
 
 class SiameseDataset(Dataset):
     def __init__(self, json_file, img_folder, tfm=None):
-        self.imgs = [osp.join(img_folder, x + '.jpg') for x in json_file.keys()]
+        self.imgs = list(json_file.keys())
         self.labels = list(json_file.values())
         self.tfm = tfm
         self.img_folder = img_folder
@@ -30,8 +30,8 @@ class SiameseDataset(Dataset):
                 self.label2imglist[json_file[k]].add(k)
         
     def __getitem__(self, index):
-        img1 = Image.open(self.imgs[index]).convert('RGB')
         label1 = self.labels[index]
+        img1 = Image.open(osp.join(self.img_folder, label1, self.imgs[index] + '.jpg')).convert('RGB')
         w, h = img1.size
         if w != h:
             img1 = Padding_resize(img1)
@@ -42,8 +42,9 @@ class SiameseDataset(Dataset):
         if randnum > (1.0 / cfg.train_batch_size):
             # 随机取一个负样例
             img2_idx = np.random.randint(0, self.imgs)
-            img2 = Image.open(self.imgs[img2_idx]).convert('RGB')
             label2 = self.labels[img2_idx]
+            img2 = Image.open(osp.join(self.img_folder, label2, self.imgs[img2_idx]+'.jpg')).convert('RGB')
+            
         else:
             # 取一个正样例
             img2_path = osp.join(self.img_folder, label1, np.random.choice(self.label2imglist[label1]) + '.jpg')
