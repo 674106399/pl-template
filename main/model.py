@@ -82,6 +82,7 @@ class Model(pl.LightningModule):
         # _, fc_feat, preds = self(inputs)
         # _, fc_feat = self(inputs)
         conv_feat1, fc_feat1, conv_feat2, fc_feat2, logits = self(im1, im2)
+        logits = logits.squeeze()
         # loss = self.loss_func(preds, targets)
         # loss = self.circleloss(fc_feat, targets) + self.loss_func(preds, targets)
         loss = F.binary_cross_entropy_with_logits(logits, targets)
