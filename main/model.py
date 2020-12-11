@@ -10,7 +10,7 @@ import pytorch_lightning as pl
 from utils.preprocessing import load_classes
 from nets.module import BackboneNet, Flatten, init_weights
 from nets.loss import CircleLoss
-
+from sklearn.metrics import recall_score
 class Model(pl.LightningModule):
     def __init__(self, backbone, feat_dim, num_classes):
         super().__init__()
@@ -87,30 +87,41 @@ class Model(pl.LightningModule):
         # loss = self.circleloss(fc_feat, targets) + self.loss_func(preds, targets)
         loss = F.binary_cross_entropy_with_logits(logits, targets)
         # acc = self.acc(preds, targets)
-        acc = (logits == targets).float().mean()
+        y_preds = (logits.sigmoid() > 0.5).float()
+        acc = (y_preds == targets).float().mean()
+        recall = recall_score(targets.detach().cpu().numpy(), y_preds.detach().cpu().numpy())
         log = {
-            'train_loss': loss,
-            'train_acc': acc
+            't_loss': loss,
+            't_acc': acc,
+            't_recall': recall
         }
         self.logger.experiment.log(log)
         return {'loss': loss, 
-                'train_acc': acc,
+                't_acc': acc,
                 'progress_bar': log}
 
     def validation_step(self, batch, batch_idx):
-        pass
-        # inputs, targets = batch
-        # _, _, preds = self(input_img)
+        im1, im2, _, targets = batch
+        # _, fc_feat, preds = self(inputs)
+        # _, fc_feat = self(inputs)
+        conv_feat1, fc_feat1, conv_feat2, fc_feat2, logits = self(im1, im2)
+        logits = logits.squeeze()
         # loss = self.loss_func(preds, targets)
+        # loss = self.circleloss(fc_feat, targets) + self.loss_func(preds, targets)
+        loss = F.binary_cross_entropy_with_logits(logits, targets)
         # acc = self.acc(preds, targets)
-        # log = {
-        #     'val_loss': loss,
-        #     'val_acc': acc
-        # }
-        # self.logger.experiment.log(log)
-        # return {'loss': loss, 
-        #         'val_acc': acc,
-        #         'progress_bar': log}
+        y_preds = (logits.sigmoid() > 0.5).float()
+        acc = (y_preds == targets).float().mean()
+        recall = recall_score(targets.detach().cpu().numpy(), y_preds.detach().cpu().numpy())
+        log = {
+            'v_loss': loss,
+            'v_acc': acc,
+            'v_recall': recall
+        }
+        self.logger.experiment.log(log)
+        return {'loss': loss, 
+                'v_acc': acc,
+                'progress_bar': log}
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=cfg.lr)

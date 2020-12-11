@@ -104,6 +104,7 @@ class DataModule(pl.LightningDataModule):
             with open(self.json_file) as f:
                 js = json.load(f)
             self.train_dataset = SiameseDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
+            self.val_dataset = SiameseDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), self.tfms['val'])
             # self.train_dataset = RejDataset(js['train'], osp.join(self.data_dir, cfg.dataset, 'train'), self.tfms['train'])
             # self.val_dataset = RejDataset(js['val'], osp.join(self.data_dir, cfg.dataset, 'val'), self.tfms['val'])
         else:
@@ -126,8 +127,8 @@ class DataModule(pl.LightningDataModule):
     def train_dataloader(self):
         return DataLoader(self.train_dataset, shuffle=True, batch_size=self.batch_size, num_workers=self.num_workers)
 
-    # def val_dataloader(self):
-    #     return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.num_workers)
+    def val_dataloader(self):
+        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.num_workers)
 
     # def test_dataloader(self):
     #     return DataLoader(self.val_dataset, batch_size=self.batch_size)
