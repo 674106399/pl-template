@@ -118,6 +118,7 @@ class Model(pl.LightningModule):
             'v_acc': acc,
             'v_recall': recall
         }
+        self.log('v_loss', loss,)
         self.logger.experiment.log(log)
         return {'loss': loss, 
                 'v_acc': acc,

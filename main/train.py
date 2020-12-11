@@ -4,6 +4,7 @@ from config import cfg
 import torch
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.callbacks import ModelCheckpoint
 import wandb
 from data import DataModule
 from model import Model, get_model
@@ -30,6 +31,13 @@ def main():
     # ------------
     model = get_model(dm.num_classes)
 
+    checkpoint_callback = ModelCheckpoint(
+        monitor='v_loss',
+        filename='rej-{epoch:02d}-{v_loss:.3f}-{v_recall:.3f}',
+        mode='min',
+    )
+
+
     # ------------
     # training
     # ------------
@@ -38,6 +46,7 @@ def main():
         # training settings
         args,
         distributed_backend='ddp',
+        callbacks=[checkpoint_callback],
         logger=wandb_logger,
         gpus=[1,2,5,6],
         # profiler=True,
