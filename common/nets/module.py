@@ -14,7 +14,7 @@ class BackboneNet(nn.Module):
     def __init__(self):
         super(BackboneNet, self).__init__()
         # self.net = ResNetBackbone(cfg.resnet_type)
-        net = torch.hub.load('zhanghang1989/ResNeSt', 'resnest101', pretrained=False)
+        net = torch.hub.load('zhanghang1989/ResNeSt', 'resnest101', pretrained=True)
         self.net = nn.Sequential(*list(net.children())[:-2])
 
     def init_weights(self):
